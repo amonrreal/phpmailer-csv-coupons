@@ -18,22 +18,27 @@
         require 'lib/SMTP.php';
 
 
-        $email_sub = "";
-        $msg = "";
+        // $email_sub = "";
+        // $msg = "";
+        $gift = "";
         $user_list = array();
         $status = array();
         $file_path = "";
+        $subject = 'Hi {user}, congratulations!';
 
         // Retrieving & storing user's submitted information
+        if (isset($_POST['gift'])) {
+            $coupon = $_POST['gift'];
+        }
         if (isset($_POST['user_list'])) {
             $user_list = json_decode($_POST['user_list']);
         }
-        if (isset($_POST['email_sub'])) {
-            $email_sub = $_POST['email_sub'];
-        }
-        if (isset($_POST['box_msg'])) {
-            $msg = $_POST['box_msg'];
-        }
+        // if (isset($_POST['email_sub'])) {
+        //     $email_sub = $_POST['email_sub'];
+        // }
+        // if (isset($_POST['box_msg'])) {
+        //     $msg = $_POST['box_msg'];
+        // }
         if (isset($_POST['uploaded_file_path'])) {
             $file_path = $_POST['uploaded_file_path'];
         }
@@ -42,14 +47,17 @@
         foreach ($user_list as $list) {
             $receiver_name = "";
             $receiver_add = "";
-            $per_msg = "";
-            $per_email_sub = "";
+            // $per_msg = "";
+            // $per_email_sub = "";
             $receiver_name = $list[0];
             $receiver_add = $list[1];
 
             // Replacing {user} with client name from subject and message
-            $per_msg = str_replace("{user}", $receiver_name, $msg);
-            $per_email_sub = str_replace("{user}", $receiver_name, $email_sub);
+            // $per_msg = str_replace("{user}", $receiver_name, $msg);
+            // $per_email_sub = str_replace("{user}", $receiver_name, $email_sub);
+
+            // Alvaro Subject modification
+            $global_subject = str_replace("{user}", $receiver_name, $subject);
 
             $mail = new PHPMailer();
             $mail->IsSMTP();
@@ -77,10 +85,15 @@
 
             // Receiver Email address
             $mail->addAddress($receiver_add);
-
-            $mail->Subject = $per_email_sub;
-            $mail->Body = $per_msg;
-            $mail->WordWrap = 50;
+            //
+            // $mail->Subject = $per_email_sub;
+            // $mail->Body = $per_msg;
+            // $mail->WordWrap = 50;
+            //Content
+            $mail->isHTML(true); // Set email format to HTML
+            $mail->Subject = $global_subject;
+            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             // Sending message and storing status
             if (!$mail->send()) {

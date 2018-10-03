@@ -12,7 +12,7 @@ Desktop.ini
 
 # ignore Composer downloads
 /vendor/*
-mail-prueba.csv
+*.csv
 
 # keep some hiddens
 !.htaccess

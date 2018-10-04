@@ -17,14 +17,14 @@
         require 'lib/PHPMailer.php';
         require 'lib/SMTP.php';
 
-
+        $message = file_get_contents('mail_templates/default_mail.html');
         // $email_sub = "";
         // $msg = "";
         $gift = "";
         $user_list = array();
         $status = array();
         $file_path = "";
-        $subject = 'Hi {user}, congratulations!';
+        $from_name = "Fulano Hernandez";
 
         // Retrieving & storing user's submitted information
         if (isset($_POST['gift'])) {
@@ -57,7 +57,10 @@
             // $per_email_sub = str_replace("{user}", $receiver_name, $email_sub);
 
             // Alvaro Subject modification
-            $global_subject = str_replace("{user}", $receiver_name, $subject);
+            // $global_subject = str_replace("{user}", $receiver_name, $subject);
+            $message = str_replace('{user}', $receiver_name, $message);
+            $message = str_replace('{coupon}', $coupon, $message);
+            $message = str_replace('{from}', $from_name, $message);
 
             $mail = new PHPMailer();
             $mail->IsSMTP();
@@ -76,12 +79,13 @@
 
             // Enable encryption, 'tls' also accepted
             $mail->SMTPSecure = 'ssl';
+            $mail->CharSet = 'UTF-8';
 
             // Sender Email address
             $mail->From = 'alvaro@lobu.mx';
 
             // Sender name
-            $mail->FromName = "Alvaro";
+            $mail->FromName = $from_name;
 
             // Receiver Email address
             $mail->addAddress($receiver_add);
@@ -91,8 +95,8 @@
             // $mail->WordWrap = 50;
             //Content
             $mail->isHTML(true); // Set email format to HTML
-            $mail->Subject = $global_subject;
-            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->Subject = 'Hello '.$receiver_name.' Congratulations';
+            $mail->Body = $message;
             $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             // Sending message and storing status
